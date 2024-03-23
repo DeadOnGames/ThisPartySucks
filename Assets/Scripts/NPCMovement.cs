@@ -12,6 +12,10 @@ public class NPCMovement : MonoBehaviour
     public Transform currentPoint;
     public float speed;
 
+    public GameObject vampire;
+
+    private bool hasLineOfSight;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,27 +28,51 @@ public class NPCMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector2 point = currentPoint.position - transform.position; 
-        if(currentPoint == pointB.transform)
+        if(hasLineOfSight)
         {
-            rb.velocity = new Vector2 (speed, 0);
-        } 
+            float DirectionX = (Vector2.MoveTowards(transform.position, vampire.transform.position, speed * Time.deltaTime).x);
+            transform.position = new Vector2(DirectionX, transform.position.y);
+        }
         else
         {
-            rb.velocity = new Vector2 (-speed, 0);  
-        }
+            Vector2 point = currentPoint.position - transform.position;
+            if (currentPoint == pointB.transform)
+            {
+                rb.velocity = new Vector2(speed, 0);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-speed, 0);
+            }
 
-        if(Vector2.Distance(transform.position, currentPoint.position) < 0.5f && currentPoint == pointB.transform)
-        {
-            Flip();
-            currentPoint = pointA.transform;
-        }
+            if (Vector2.Distance(transform.position, currentPoint.position) < 0.5f && currentPoint == pointB.transform)
+            {
+                Flip();
+                currentPoint = pointA.transform;
+            }
 
-        if (Vector2.Distance(transform.position, currentPoint.position) < 0.5f && currentPoint == pointA.transform)
-        {
-            Flip();
-            currentPoint = pointB.transform;
+            if (Vector2.Distance(transform.position, currentPoint.position) < 0.5f && currentPoint == pointA.transform)
+            {
+                Flip();
+                currentPoint = pointB.transform;
+            }
         }
+    }
+
+    public void FixedUpdate()
+    {
+        RaycastHit2D ray = Physics2D.Raycast(transform.position, vampire.transform.position - transform.position);
+        if(ray.collider != null)
+        {
+            hasLineOfSight = ray.collider.CompareTag("Vampire");
+            if(hasLineOfSight)
+            {
+                Debug.DrawRay(transform.position, vampire.transform.position - transform.position, Color.red);
+            } else
+            {
+                Debug.DrawRay(transform.position, vampire.transform.position - transform.position, Color.green);
+            }
+        }    
     }
 
     private void OnDrawGizmos()
