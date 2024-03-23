@@ -68,6 +68,7 @@ public class NPCMovement : MonoBehaviour
             if(hasLineOfSight)
             {
                 Debug.DrawRay(transform.position, vampire.transform.position - transform.position, Color.red);
+                StartCoroutine(CheckSustainedLineOfSight());
             } else
             {
                 Debug.DrawRay(transform.position, vampire.transform.position - transform.position, Color.green);
@@ -87,5 +88,14 @@ public class NPCMovement : MonoBehaviour
         Vector3 localScale = transform.localScale;
         localScale.x *= -1;
         transform.localScale = localScale;
+    }
+
+    IEnumerator CheckSustainedLineOfSight()
+    {
+        yield return new WaitForSeconds(3f);
+        if (hasLineOfSight)
+        {
+           
+        }
     }
 }
