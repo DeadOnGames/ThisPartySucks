@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class VampireController : MonoBehaviour
 {
-   // public BoxCollider2D collider;
+    // public BoxCollider2D collider;
+    [SerializeField] private UnityEvent onBite;
 
     // Start is called before the first frame update
     void Start()
@@ -24,15 +26,14 @@ public class VampireController : MonoBehaviour
         {
             collision.gameObject.SetActive(false);
             Debug.Log("Bite");
+            OnBite();
+
             //Bite();
         }
     }
 
-    public void Bite()
+    public void OnBite()
     {
-        //Increase blood bar
-        //Bloode animation
-        //NPC destroy
-        
+        onBite?.Invoke();
     }
 }
