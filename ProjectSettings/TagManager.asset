@@ -6,6 +6,7 @@ TagManager:
   tags:
   - NPC
   - Vampire
+  - Collider
   layers:
   - Default
   - TransparentFX
