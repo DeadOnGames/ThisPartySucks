@@ -8,11 +8,14 @@ public class VampireController : MonoBehaviour
     // public BoxCollider2D collider;
     [SerializeField] private UnityEvent onBite;
     public bool hasBeenSeen;
+    public AudioClip bumpAudio;
+    public AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = bumpAudio;
     }
 
     // Update is called once per frame
@@ -33,6 +36,10 @@ public class VampireController : MonoBehaviour
         {
             Debug.Log("Bite");
             OnBite();
+        } 
+        else
+        {
+            audioSource.Play();
         }
     }
 
