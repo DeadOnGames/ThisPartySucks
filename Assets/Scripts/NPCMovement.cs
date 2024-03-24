@@ -146,9 +146,10 @@ public class NPCMovement : MonoBehaviour
     public void OnBite()
     {
         animator.SetTrigger("isBitten");
-        isDead = true;
         audio.clip = bloodAudio;
         audio.Play();
+
+        StartCoroutine(WaitToSetDead());
     }
 
     public void Scream()
@@ -157,5 +158,11 @@ public class NPCMovement : MonoBehaviour
         animator.SetBool("isScreaming", true);
         audio.clip = screamAudio;
         audio.Play();
+    }
+
+    IEnumerator WaitToSetDead()
+    {
+        yield return new WaitForSeconds(0.5f);
+        isDead = true;
     }
 }
