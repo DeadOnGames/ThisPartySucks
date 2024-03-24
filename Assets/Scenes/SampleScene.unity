@@ -470,6 +470,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  hasBeenSeen: 0
 --- !u!95 &91751860
 Animator:
   serializedVersion: 5

@@ -170,6 +170,6 @@ public class NPCMovement : MonoBehaviour
 
     public void GameOver()
     {
-        Debug.Log("Game over");
+        GameManager.Instance.gameLost = true;
     }
 }
