@@ -22,13 +22,13 @@ public class VampireController : MonoBehaviour
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "NPC")
+        var collider = collision.gameObject;
+        NPCMovement NPCcontroller = collider.gameObject.GetComponent<NPCMovement>();
+
+        if (collider.tag == "NPC" && !NPCcontroller.isDead)
         {
-            //collision.gameObject.SetActive(false);
             Debug.Log("Bite");
             OnBite();
-
-            //Bite();
         }
     }
 
