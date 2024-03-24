@@ -25,7 +25,8 @@ public class NPCMovement : MonoBehaviour
     public AudioClip bloodAudio;
     public AudioSource audio;
 
-    public Image uiEyeIndicator;
+    public int seenPoint = 1;
+
     private VampireController VampireController;
 
     // Start is called before the first frame update
@@ -37,7 +38,6 @@ public class NPCMovement : MonoBehaviour
 
         audio = GetComponent<AudioSource>();
         animator.SetBool("isScreaming", false);
-        uiEyeIndicator.gameObject.SetActive(false);
 
         VampireController = vampire.GetComponent<VampireController>();
     }
@@ -48,6 +48,12 @@ public class NPCMovement : MonoBehaviour
         if (isDead)
         {
             rb.velocity = Vector3.zero;
+
+            if(seenPoint == 0)
+            {
+                VampireController.seenCount -= 1;
+                seenPoint = 1;
+            }
             return;
         }
 
@@ -55,15 +61,21 @@ public class NPCMovement : MonoBehaviour
         {
             float DirectionX = (Vector2.MoveTowards(transform.position, vampire.transform.position, speed * Time.deltaTime).x);
             transform.position = new Vector2(DirectionX, transform.position.y);
-            uiEyeIndicator.gameObject.SetActive(true);
             Scream();
+            VampireController.seenCount += seenPoint;
+            seenPoint = 0;
 
             VampireController.hasBeenSeen = true;
         }
         else
         {
-            //uiEyeIndicator.gameObject.SetActive(false);
             animator.SetBool("isScreaming", false);
+
+            if(seenPoint == 0)
+            {
+                VampireController.seenCount -= 1;
+                seenPoint = 1;
+            }
 
             Vector2 point = currentPoint.position - transform.position;
             if (currentPoint == pointB.transform)
@@ -96,17 +108,6 @@ public class NPCMovement : MonoBehaviour
         {
             bool previousLineOfSight = hasLineOfSight;
             hasLineOfSight = ray.collider.CompareTag("Vampire");
-
-            // Reset the timer if the vampire just entered the line of sight
-            if (hasLineOfSight && !previousLineOfSight)
-            {
-                StopCoroutine("CheckSustainedLineOfSight"); // Stop to ensure not multiple instances
-                StartCoroutine("CheckSustainedLineOfSight");
-            }
-            else if (!hasLineOfSight)
-            {
-                StopCoroutine("CheckSustainedLineOfSight");
-            }
 
             if (hasLineOfSight)
             {
@@ -142,16 +143,6 @@ public class NPCMovement : MonoBehaviour
         transform.localScale = localScale;
     }
 
-    IEnumerator CheckSustainedLineOfSight()
-    {
-        yield return new WaitForSeconds(5f);
-        if (hasLineOfSight)
-        {
-            // Trigger game over here
-            GameOver();
-        }
-    }
-
     public void OnBite()
     {
         animator.SetTrigger("isBitten");
@@ -166,10 +157,5 @@ public class NPCMovement : MonoBehaviour
         animator.SetBool("isScreaming", true);
         audio.clip = screamAudio;
         audio.Play();
-    }
-
-    public void GameOver()
-    {
-        GameManager.Instance.gameLost = true;
     }
 }
