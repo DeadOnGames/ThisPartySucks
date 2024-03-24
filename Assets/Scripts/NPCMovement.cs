@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NPCMovement : MonoBehaviour
 {
@@ -16,6 +18,15 @@ public class NPCMovement : MonoBehaviour
     private bool hasLineOfSight;
 
     public bool isDead;
+    private bool vampireSeen;
+    private float timeVampireSeen;
+
+    public AudioClip screamAudio;
+    public AudioClip bloodAudio;
+    public AudioSource audio;
+
+    public Image uiEyeIndicator;
+    private VampireController VampireController;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +34,12 @@ public class NPCMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();   
         animator = GetComponent<Animator>();
         currentPoint = pointB.transform;
+
+        audio = GetComponent<AudioSource>();
         animator.SetBool("isScreaming", false);
+        uiEyeIndicator.gameObject.SetActive(false);
+
+        VampireController = vampire.GetComponent<VampireController>();
     }
 
     // Update is called once per frame
@@ -39,11 +55,16 @@ public class NPCMovement : MonoBehaviour
         {
             float DirectionX = (Vector2.MoveTowards(transform.position, vampire.transform.position, speed * Time.deltaTime).x);
             transform.position = new Vector2(DirectionX, transform.position.y);
-            animator.SetBool("isScreaming", true);
+            uiEyeIndicator.gameObject.SetActive(true);
+            Scream();
+
+            VampireController.hasBeenSeen = true;
         }
         else
         {
+            //uiEyeIndicator.gameObject.SetActive(false);
             animator.SetBool("isScreaming", false);
+
             Vector2 point = currentPoint.position - transform.position;
             if (currentPoint == pointB.transform)
             {
@@ -71,18 +92,31 @@ public class NPCMovement : MonoBehaviour
     public void FixedUpdate()
     {
         RaycastHit2D ray = Physics2D.Raycast(transform.position, vampire.transform.position - transform.position);
-        if(ray.collider != null)
+        if (ray.collider != null)
         {
+            bool previousLineOfSight = hasLineOfSight;
             hasLineOfSight = ray.collider.CompareTag("Vampire");
-            if(hasLineOfSight)
+
+            // Reset the timer if the vampire just entered the line of sight
+            if (hasLineOfSight && !previousLineOfSight)
+            {
+                StopCoroutine("CheckSustainedLineOfSight"); // Stop to ensure not multiple instances
+                StartCoroutine("CheckSustainedLineOfSight");
+            }
+            else if (!hasLineOfSight)
+            {
+                StopCoroutine("CheckSustainedLineOfSight");
+            }
+
+            if (hasLineOfSight)
             {
                 Debug.DrawRay(transform.position, vampire.transform.position - transform.position, Color.red);
-                StartCoroutine(CheckSustainedLineOfSight());
-            } else
+            }
+            else
             {
                 Debug.DrawRay(transform.position, vampire.transform.position - transform.position, Color.green);
             }
-        }    
+        }
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
@@ -110,10 +144,11 @@ public class NPCMovement : MonoBehaviour
 
     IEnumerator CheckSustainedLineOfSight()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
         if (hasLineOfSight)
         {
-           
+            // Trigger game over here
+            GameOver();
         }
     }
 
@@ -121,5 +156,20 @@ public class NPCMovement : MonoBehaviour
     {
         animator.SetTrigger("isBitten");
         isDead = true;
+        audio.clip = bloodAudio;
+        audio.Play();
+    }
+
+    public void Scream()
+    {
+        if (isDead) return;
+        animator.SetBool("isScreaming", true);
+        audio.clip = screamAudio;
+        audio.Play();
+    }
+
+    public void GameOver()
+    {
+        Debug.Log("Game over");
     }
 }
