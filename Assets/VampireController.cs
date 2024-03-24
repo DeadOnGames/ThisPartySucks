@@ -24,7 +24,7 @@ public class VampireController : MonoBehaviour
     {
         if(collision.gameObject.tag == "NPC")
         {
-            collision.gameObject.SetActive(false);
+            //collision.gameObject.SetActive(false);
             Debug.Log("Bite");
             OnBite();
 
