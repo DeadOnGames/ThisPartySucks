@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -19,7 +18,15 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-       
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     // Start is called before the first frame update
@@ -31,21 +38,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Check the health bar to determine win state
-        if (slider.value == slider.maxValue)
-        {
-            OnWin();
-        }
 
         if (gameLost)
         {
             OnLose();
         }
-    }
-
-    public void OnWin()
-    {
-        onWin?.Invoke();
     }
 
     public void OnLose()

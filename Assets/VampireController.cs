@@ -60,7 +60,7 @@ public class VampireController : MonoBehaviour
 
     IEnumerator CheckSustainedLineOfSight()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(10f);
         if (seenCount > 0)
         {
             GameManager.Instance.gameLost = true;

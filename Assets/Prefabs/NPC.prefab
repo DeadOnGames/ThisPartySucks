@@ -245,7 +245,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: -800528464, guid: dd15e2b9a83b203498365461a4066f16, type: 3}
   m_Color: {r: 1, g: 0.6745283, b: 0.6745283, a: 1}
   m_FlipX: 0
@@ -352,7 +352,7 @@ MonoBehaviour:
   screamAudio: {fileID: 8300000, guid: ff49ff886d43aa34c89e0f77032ef970, type: 3}
   bloodAudio: {fileID: 8300000, guid: 0f468b037f3fe2e45be144bca5592df0, type: 3}
   audio: {fileID: 7286628748580194340}
-  uiEyeIndicator: {fileID: 0}
+  seenPoint: 1
 --- !u!95 &6161625956782876394
 Animator:
   serializedVersion: 5
